@@ -428,19 +428,21 @@
             margin-right: 8px;
         }
 
-        #rss-gear {
+        #menu-btn {
             position: absolute;
-            right: 10px;
-            bottom: 5px;
+            top: 34px;
+            left: 130px;
+            z-index: 100;
+            font-size: 1.5rem;
             cursor: pointer;
-            z-index: 70;
-            font-size: 20px;
-            opacity: 0.5;
-            transition: opacity 0.3s;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.2s;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            user-select: none;
         }
 
-        #rss-gear:hover {
-            opacity: 1;
+        #menu-btn:hover {
+            transform: scale(1.2);
         }
 
         #help-trigger:hover {
@@ -626,7 +628,7 @@
     <div id="rss-ticker">
         <div id="rss-content">Lade Nachrichten...</div>
     </div>
-    <div id="rss-gear" title="Einstellungen">⚙️</div>
+    <div id="menu-btn" title="Menü / Beenden (Esc)">⚙️</div>
 
     <script>
         let currentLang = 'de';
@@ -690,7 +692,7 @@
                 reloadBtnTitle: "Bilderliste aktualisieren (R)",
                 favBtnTitle: "Favorit (F)",
                 deleteBtnTitle: "Bild löschen (Entf)",
-                rssGearTitle: "Einstellungen",
+                menuBtnTitle: "Menü / Beenden (Esc)",
                 helpTriggerTitle: "Bedienungsanleitung / Hilfe",
                 rssLoading: "Lade Nachrichten...",
                 browserWarning: "<strong>Browser-Kompatibilität:</strong> Ihr Webbrowser (z. B. Firefox) unterstützt das direkte Laden von lokalen Ordnern nicht. Bitte nutzen Sie <strong>Google Chrome</strong>, <strong>Microsoft Edge</strong>, <strong>Brave</strong> oder <strong>Opera</strong>, um die Diashow in vollem Umfang zu nutzen."
@@ -753,7 +755,7 @@
                 reloadBtnTitle: "Refresh image list (R)",
                 favBtnTitle: "Favorite (F)",
                 deleteBtnTitle: "Delete image (Delete)",
-                rssGearTitle: "Settings",
+                menuBtnTitle: "Menu / Stop (Esc)",
                 helpTriggerTitle: "User Guide / Help",
                 rssLoading: "Loading news...",
                 browserWarning: "<strong>Browser Compatibility:</strong> Your web browser (e.g. Firefox) does not support direct loading of local folders. Please use <strong>Google Chrome</strong>, <strong>Microsoft Edge</strong>, <strong>Brave</strong>, or <strong>Opera</strong> to use the slideshow with full features."
@@ -795,7 +797,7 @@
 
                 <h4 style="margin: 22px 0 8px 0; color: #fff; border-left: 3px solid #ffcc00; padding-left: 8px;">Bedienelemente während der Diashow</h4>
                 <ul style="padding-left: 18px; margin: 0; font-size: 13px; color: #ccc;">
-                    <li>Klicken Sie auf das **⚙️ Zahnrad-Symbol** (unten rechts) oder drücken Sie **ESC**, um die Diashow zu beenden.</li>
+                    <li>Klicken Sie auf das **⚙️ Zahnrad-Symbol** (oben links) oder drücken Sie **ESC**, um die Diashow zu beenden.</li>
                     <li>Klicken Sie auf das **♡ / ❤️ Herz-Symbol** (oben rechts) oder drücken Sie **F**, um das Bild zu Ihren Favoriten hinzuzufügen.</li>
                     <li>Klicken Sie auf das **💔 Gebrochene Herz-Symbol** (unter Favoriten) oder drücken Sie **Entf**, um das Bild von der Festplatte zu löschen.</li>
                     <li>Klicken Sie auf das **🔄 Aktualisierungs-Symbol** (unter Info) oder drücken Sie **R**, um nach neuen oder gelöschten Bildern zu scannen.</li>
@@ -858,7 +860,7 @@
 
                 <h4 style="margin: 22px 0 8px 0; color: #fff; border-left: 3px solid #ffcc00; padding-left: 8px;">Slideshow Control Overlay</h4>
                 <ul style="padding-left: 18px; margin: 0; font-size: 13px; color: #ccc;">
-                    <li>Click the **⚙️ Gear Icon** (bottom right of the slideshow) or press **ESC** to stop and return to the main menu.</li>
+                    <li>Click the **⚙️ Gear Icon** (top left of the slideshow) or press **ESC** to stop and return to the main menu.</li>
                     <li>Click the **♡ / ❤️ Heart Icon** (top right) or press **F** to add the current image to your favorites.</li>
                     <li>Click the **💔 Broken Heart Icon** (under the favorite button) or press **Delete** to permanently delete the image from your disk.</li>
                     <li>Click the **🔄 Reload Icon** (under the info button) or press **R** to scan for new or deleted images in the folders.</li>
@@ -919,7 +921,7 @@
             rssUrlList: document.getElementById('rssUrlList'),
             rssTicker: document.getElementById('rss-ticker'),
             rssContent: document.getElementById('rss-content'),
-            rssGear: document.getElementById('rss-gear'),
+            menuBtn: document.getElementById('menu-btn'),
             favBtn: document.getElementById('fav-btn'),
             favCount: document.getElementById('fav-count'),
             favList: document.getElementById('favList'),
@@ -1055,7 +1057,7 @@
             elements.reloadBtn.title = texts.reloadBtnTitle;
             elements.favBtn.title = texts.favBtnTitle;
             elements.deleteBtn.title = texts.deleteBtnTitle;
-            elements.rssGear.title = texts.rssGearTitle;
+            elements.menuBtn.title = texts.menuBtnTitle;
             elements.helpTrigger.title = texts.helpTriggerTitle;
 
             // Wetter neu abfragen, um API-Sprache anzupassen
@@ -1181,9 +1183,9 @@
             imageFiles.forEach((imgObj, index) => {
                 const img = document.createElement('img');
                 img.classList.add('slide');
-                const file = imgObj.file;
-                img.src = URL.createObjectURL(file);
+                // Nur das erste Bild lädt seine Quelle sofort (spart enorm viel Arbeitsspeicher!)
                 if (index === 0) {
+                    img.src = URL.createObjectURL(imgObj.file);
                     img.classList.add('active');
                     applyImageLayout(img);
                 }
@@ -1193,7 +1195,8 @@
             currentIndex = 0;
             const time = parseInt(elements.intervalSelect.value) * 1000;
             slideshowInterval = setInterval(nextSlide, time);
-            elements.rssGear.style.display = 'block';
+            elements.menuBtn.style.display = 'block';
+            elements.menuBtn.style.opacity = "0.7";
             updateFavIcon();
             updateInfoDisplay();
             saveSettings();
@@ -1266,6 +1269,9 @@
                     const slides = document.querySelectorAll('.slide');
                     const slideToRemove = slides[currentIndex];
                     if (slideToRemove) {
+                        if (slideToRemove.src && slideToRemove.src.startsWith('blob:')) {
+                            URL.revokeObjectURL(slideToRemove.src);
+                        }
                         slideToRemove.remove();
                     }
 
@@ -1361,13 +1367,22 @@
                 }
             }
 
+            // Bestehende ObjectURLs freigeben, um Speicherlecks zu verhindern
+            const oldSlides = document.querySelectorAll('.slide');
+            oldSlides.forEach(s => {
+                if (s.src && s.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(s.src);
+                }
+            });
+
             // DOM-Slides komplett neu aufbauen
             elements.container.innerHTML = '';
             newImageFiles.forEach((imgObj, index) => {
                 const img = document.createElement('img');
                 img.classList.add('slide');
-                img.src = URL.createObjectURL(imgObj.file);
+                // Nur das aktuell aktive Bild lädt seine Quelle sofort (spart Arbeitsspeicher!)
                 if (index === newIndex) {
+                    img.src = URL.createObjectURL(imgObj.file);
                     img.classList.add('active');
                     applyImageLayout(img);
                 }
@@ -1579,6 +1594,14 @@
             clearActiveTransition();
 
             const prevSlide = slides[currentIndex];
+            const nextIndex = (currentIndex + direction + slides.length) % slides.length;
+            const activeSlide = slides[nextIndex];
+
+            // Dynamisch das nächste Bild laden, falls noch nicht geladen (Spart Speicher!)
+            if (!activeSlide.src || activeSlide.src === window.location.href || activeSlide.src.startsWith('data:')) {
+                const imgObj = imageFiles[nextIndex];
+                activeSlide.src = URL.createObjectURL(imgObj.file);
+            }
 
             let effect = elements.effectSelect.value;
             if (effect === 'random') {
@@ -1588,14 +1611,18 @@
 
             if (effect === 'puzzle') {
                 prevSlide.classList.add('exiting', 'puzzle-exit');
-                currentIndex = (currentIndex + direction + slides.length) % slides.length;
+                currentIndex = nextIndex;
                 elements.currentImg.innerText = currentIndex + 1;
-                const activeSlide = slides[currentIndex];
 
                 applyImageLayout(activeSlide);
 
                 startPuzzleTransition(prevSlide, activeSlide, () => {
                     prevSlide.classList.remove('active', 'exiting', 'puzzle-exit');
+                    // Speicher des vorherigen Bildes freigeben
+                    if (prevSlide.src && prevSlide.src.startsWith('blob:')) {
+                        URL.revokeObjectURL(prevSlide.src);
+                        prevSlide.src = '';
+                    }
                 });
 
                 updateFavIcon();
@@ -1610,9 +1637,8 @@
 
             if (effect === 'zoomout') {
                 prevSlide.classList.add('exiting', 'zoom-out-exit');
-                currentIndex = (currentIndex + direction + slides.length) % slides.length;
+                currentIndex = nextIndex;
                 elements.currentImg.innerText = currentIndex + 1;
-                const activeSlide = slides[currentIndex];
 
                 applyImageLayout(activeSlide);
 
@@ -1627,6 +1653,11 @@
                     oldSlide.classList.remove('active', 'exiting', 'zoom-out-exit');
                     activeSlide.classList.remove('zoom-out-enter');
                     clearActiveTransition();
+                    // Speicher des vorherigen Bildes freigeben
+                    if (oldSlide.src && oldSlide.src.startsWith('blob:')) {
+                        URL.revokeObjectURL(oldSlide.src);
+                        oldSlide.src = '';
+                    }
                 }, 1500);
 
                 updateFavIcon();
@@ -1642,9 +1673,8 @@
             // Standard-Übergänge
             prevSlide.classList.remove('active', 'ken-burns', 'slide-in');
 
-            currentIndex = (currentIndex + direction + slides.length) % slides.length;
+            currentIndex = nextIndex;
             elements.currentImg.innerText = currentIndex + 1;
-            const activeSlide = slides[currentIndex];
 
             applyImageLayout(activeSlide);
 
@@ -1654,6 +1684,15 @@
 
             updateFavIcon();
             updateInfoDisplay();
+
+            // Speicher des vorherigen Bildes verzögert freigeben (nach dem Fade-out)
+            const oldSlide = prevSlide;
+            setTimeout(() => {
+                if (oldSlide && !oldSlide.classList.contains('active') && oldSlide.src && oldSlide.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(oldSlide.src);
+                    oldSlide.src = '';
+                }
+            }, 1600);
 
             if (!isPaused) {
                 clearInterval(slideshowInterval);
@@ -1837,7 +1876,7 @@
         };
 
         // Konfig Export
-        elements.exportBtn.onclick = () => {
+        elements.exportBtn.onclick = async () => {
             const config = {
                 rssFeeds: rssFeeds,
                 rssEnabled: elements.rssEnabled.checked,
@@ -1850,13 +1889,42 @@
                 lang: currentLang,
                 dynamicPlacement: elements.dynamicPlacement.checked
             };
+
+            // Versuche modernen File System Access API Save-Picker (perfekt für PWAs in Edge/Chrome)
+            if (window.showSaveFilePicker) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: 'slideshow-config.json',
+                        types: [{
+                            description: 'JSON Konfiguration',
+                            accept: { 'application/json': ['.json'] }
+                        }]
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write(JSON.stringify(config, null, 2));
+                    await writable.close();
+                    return; // Erfolgreich gespeichert!
+                } catch (err) {
+                    console.log('showSaveFilePicker abgebrochen oder fehlgeschlagen, nutze Fallback:', err);
+                    // Falls Benutzer abbricht, nicht weitermachen, außer bei Fehler
+                    if (err.name === 'AbortError') return;
+                }
+            }
+
+            // Fallback für Browser, die showSaveFilePicker nicht unterstützen
             const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = 'slideshow-config.json';
+            document.body.appendChild(a); // Ins DOM einhängen für PWA-Sicherheit
             a.click();
-            URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            // Verzögerter Entzug der URL, um den Download nicht abzuwürgen
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 10000);
         };
 
         // Konfig Import
@@ -1917,7 +1985,7 @@
             }
         };
 
-        elements.rssGear.onclick = () => { window.dispatchEvent(new KeyboardEvent('keydown', { 'key': 'Escape' })); };
+        elements.menuBtn.onclick = () => { window.dispatchEvent(new KeyboardEvent('keydown', { 'key': 'Escape' })); };
 
         elements.helpTrigger.onclick = () => {
             elements.helpModal.style.display = 'flex';
@@ -1968,9 +2036,16 @@
                 elements.deleteBtn.style.opacity = "0";
                 elements.infoBtn.style.opacity = "0";
                 elements.reloadBtn.style.opacity = "0";
+                const slides = document.querySelectorAll('.slide');
+                slides.forEach(s => {
+                    if (s.src && s.src.startsWith('blob:')) {
+                        URL.revokeObjectURL(s.src);
+                    }
+                });
                 elements.container.innerHTML = '';
                 elements.rssTicker.style.display = 'none';
-                elements.rssGear.style.display = 'none';
+                elements.menuBtn.style.display = 'none';
+                elements.menuBtn.style.opacity = "0";
                 elements.setupDiv.style.display = 'block';
                 releaseWakeLock(); // Standby-Verhinderung aufheben
                 renderFavoritesList(); // Liste beim Zurückkehren aktualisieren
