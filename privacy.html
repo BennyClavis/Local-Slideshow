@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datenschutzerklärung - Browser Diashow</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        h1 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        h2 {
+            border-left: 4px solid #007bff;
+            padding-left: 10px;
+            margin-top: 30px;
+        }
+
+        a {
+            color: #66b2ff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Datenschutzerklärung</h1>
+        <p>Diese Datenschutzerklärung informiert Sie über die Art, den Umfang und den Zweck der Verarbeitung von
+            personenbezogenen Daten im Rahmen der Nutzung der App <strong>Browser Diashow</strong> (nachfolgend „App“
+            genannt).</p>
+
+        <h2>1. Allgemeine Informationen</h2>
+        <p>Die App wird als lokale Progressive Web App (PWA) betrieben. Die Nutzung der App erfolgt direkt in Ihrem
+            Webbrowser bzw. der PWA-Laufzeitumgebung. Alle primären Funktionen der App laufen vollständig lokal auf
+            Ihrem Gerät ab.</p>
+
+        <h2>2. Lokale Verarbeitung von Bilddaten</h2>
+        <p>Die Kernfunktion dieser App ist die Anzeige Ihrer eigenen, lokal gespeicherten Bilddateien in einer Diashow.
+        </p>
+        <ul>
+            <li><strong>Ordnerzugriff:</strong> Die App nutzt die <em>File System Access API</em> Ihres Webbrowsers. Sie
+                wählen manuell aus, welche lokalen Ordner die App scannen darf.</li>
+            <li><strong>Kein Upload:</strong> Keine Ihrer Bilddateien, Dateinamen oder Pfadinformationen werden an einen
+                externen Server oder an den Entwickler übertragen. Der Zugriff auf Ihre Bilder erfolgt rein temporär und
+                ausschließlich lokal in Ihrem Webbrowser.</li>
+            <li><strong>Speicherung:</strong> Die von Ihnen erteilten Berechtigungen für den Ordnerzugriff sowie Ihre
+                als „Favoriten“ markierten Bildpfade werden ausschließlich lokal in der <em>IndexedDB</em> (einer
+                lokalen Datenbank Ihres Webbrowsers) auf Ihrem Gerät gespeichert. Sie können diese Daten jederzeit über
+                die Einstellungen Ihres Webbrowsers löschen.</li>
+        </ul>
+
+        <h2>3. Nutzung von Drittanbieter-Schnittstellen (APIs)</h2>
+        <p>Die App bietet optionale Zusatzfunktionen, die Daten aus dem Internet laden:</p>
+        <ul>
+            <li><strong>Wettervorhersage:</strong> Wenn Sie die Wetteranzeige aktivieren, ruft die App aktuelle
+                Wetterdaten von <em>OpenWeatherMap</em> ab. Hierzu wird der von Ihnen eingegebene API-Schlüssel und der
+                Name der Stadt an die Server von OpenWeatherMap übertragen. Es werden dabei keine weiteren persönlichen
+                Daten übertragen. Die Datenschutzerklärung von OpenWeatherMap finden Sie unter <a
+                    href="https://openweathermap.org/privacy-policy" target="_blank"
+                    rel="noopener">openweathermap.org/privacy-policy</a>.</li>
+            <li><strong>RSS-Feeds:</strong> Wenn Sie das RSS-News-Laufband aktivieren, lädt die App Nachrichten-Feeds
+                aus den von Ihnen konfigurierten RSS-URLs. Um CORS-Sperren im Webbrowser zu umgehen, nutzt die App
+                standardmäßig einen Konvertierungsdienst (z.B. rss2json.com). Dabei wird lediglich die URL des RSS-Feeds
+                übertragen, um den Feed im lesbaren JSON-Format zurückzuliefern.</li>
+        </ul>
+
+        <h2>4. Lokale Speicherung von Einstellungen</h2>
+        <p>Sämtliche Einstellungen der App (z.B. Wechsel-Intervalle, Übergangseffekte, der OpenWeatherMap-API-Schlüssel
+            und konfigurierte RSS-Feeds) werden über die <em>Web Storage API (localStorage)</em> auf Ihrem Gerät
+            gespeichert. Diese Einstellungen verbleiben lokal und werden zu keinem Zeitpunkt an externe Server
+            übertragen.</p>
+
+        <h2>5. Ihre Rechte</h2>
+        <p>Da wir keine Daten von Ihnen erheben, speichern oder verarbeiten, können wir Ihnen gegenüber keine Auskünfte
+            über gespeicherte Daten erteilen. Sie haben jedoch das volle Recht, die Nutzung der App jederzeit zu beenden
+            und alle lokal gespeicherten Daten (Favoriten, Einstellungen und Ordnerberechtigungen) direkt über die
+            Löschfunktion Ihres Webbrowsers (Browser-Cache/Website-Daten löschen) unwiderruflich zu entfernen.</p>
+
+        <h2>6. Kontakt</h2>
+        <p>Bei Fragen zu dieser Datenschutzerklärung wenden Sie sich bitte an den Herausgeber der App
+            (bennyclavis@gmail.com).</p>
+
+        <footer>
+            Stand: Juni 2026<br>
+            Erstellt für die App "Browser Diashow"
+        </footer>
+    </div>
+</body>
+
+</html>

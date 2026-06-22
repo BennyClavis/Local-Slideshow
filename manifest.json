@@ -1,0 +1,26 @@
+{
+  "name": "Browser Diashow - Lokale Foto-Diashow",
+  "short_name": "Diashow",
+  "description": "Eine moderne PWA-Diashow zum Abspielen lokaler Fotos mit Übergangseffekten, Wetteranzeige und RSS-Feeds.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#1e1e1e",
+  "orientation": "any",
+  "categories": [
+    "utilities",
+    "photo"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
