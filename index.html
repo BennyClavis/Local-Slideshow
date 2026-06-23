@@ -1597,107 +1597,128 @@
             const nextIndex = (currentIndex + direction + slides.length) % slides.length;
             const activeSlide = slides[nextIndex];
 
-            // Dynamisch das nächste Bild laden, falls noch nicht geladen (Spart Speicher!)
-            if (!activeSlide.src || activeSlide.src === window.location.href || activeSlide.src.startsWith('data:')) {
-                const imgObj = imageFiles[nextIndex];
-                activeSlide.src = URL.createObjectURL(imgObj.file);
-            }
+            const triggerTransition = () => {
+                let effect = elements.effectSelect.value;
+                if (effect === 'random') {
+                    const MathEffects = ['fade', 'kenburns', 'slide', 'zoomout', 'puzzle'];
+                    effect = MathEffects[Math.floor(Math.random() * MathEffects.length)];
+                }
 
-            let effect = elements.effectSelect.value;
-            if (effect === 'random') {
-                const effects = ['fade', 'kenburns', 'slide', 'zoomout', 'puzzle'];
-                effect = effects[Math.floor(Math.random() * effects.length)];
-            }
+                if (effect === 'puzzle') {
+                    prevSlide.classList.add('exiting', 'puzzle-exit');
+                    currentIndex = nextIndex;
+                    elements.currentImg.innerText = currentIndex + 1;
 
-            if (effect === 'puzzle') {
-                prevSlide.classList.add('exiting', 'puzzle-exit');
+                    applyImageLayout(activeSlide);
+
+                    startPuzzleTransition(prevSlide, activeSlide, () => {
+                        prevSlide.classList.remove('active', 'exiting', 'puzzle-exit');
+                        // Speicher des vorherigen Bildes freigeben
+                        if (prevSlide.src && prevSlide.src.startsWith('blob:')) {
+                            URL.revokeObjectURL(prevSlide.src);
+                            prevSlide.src = '';
+                        }
+                    });
+
+                    updateFavIcon();
+                    updateInfoDisplay();
+                    if (!isPaused) {
+                        clearInterval(slideshowInterval);
+                        const time = parseInt(elements.intervalSelect.value) * 1000;
+                        slideshowInterval = setInterval(() => nextSlide(1), time);
+                    }
+                    return;
+                }
+
+                if (effect === 'zoomout') {
+                    prevSlide.classList.add('exiting', 'zoom-out-exit');
+                    currentIndex = nextIndex;
+                    elements.currentImg.innerText = currentIndex + 1;
+
+                    applyImageLayout(activeSlide);
+
+                    activeSlide.classList.add('active', 'zoom-out-enter');
+
+                    transitionPrevSlide = prevSlide;
+                    transitionActiveSlide = activeSlide;
+
+                    const oldSlide = prevSlide;
+                    activeTransitionTimeout = setTimeout(() => {
+                        activeTransitionTimeout = null;
+                        oldSlide.classList.remove('active', 'exiting', 'zoom-out-exit');
+                        activeSlide.classList.remove('zoom-out-enter');
+                        clearActiveTransition();
+                        // Speicher des vorherigen Bildes freigeben
+                        if (oldSlide.src && oldSlide.src.startsWith('blob:')) {
+                            URL.revokeObjectURL(oldSlide.src);
+                            oldSlide.src = '';
+                        }
+                    }, 1500);
+
+                    updateFavIcon();
+                    updateInfoDisplay();
+                    if (!isPaused) {
+                        clearInterval(slideshowInterval);
+                        const time = parseInt(elements.intervalSelect.value) * 1000;
+                        slideshowInterval = setInterval(() => nextSlide(1), time);
+                    }
+                    return;
+                }
+
+                // Standard-Übergänge
+                prevSlide.classList.remove('active', 'ken-burns', 'slide-in');
+
                 currentIndex = nextIndex;
                 elements.currentImg.innerText = currentIndex + 1;
 
                 applyImageLayout(activeSlide);
 
-                startPuzzleTransition(prevSlide, activeSlide, () => {
-                    prevSlide.classList.remove('active', 'exiting', 'puzzle-exit');
-                    // Speicher des vorherigen Bildes freigeben
-                    if (prevSlide.src && prevSlide.src.startsWith('blob:')) {
-                        URL.revokeObjectURL(prevSlide.src);
-                        prevSlide.src = '';
-                    }
-                });
+                activeSlide.classList.add('active');
+                if (effect === 'kenburns') activeSlide.classList.add('ken-burns');
+                if (effect === 'slide') activeSlide.classList.add('slide-in');
 
                 updateFavIcon();
                 updateInfoDisplay();
-                if (!isPaused) {
-                    clearInterval(slideshowInterval);
-                    const time = parseInt(elements.intervalSelect.value) * 1000;
-                    slideshowInterval = setInterval(() => nextSlide(1), time);
-                }
-                return;
-            }
 
-            if (effect === 'zoomout') {
-                prevSlide.classList.add('exiting', 'zoom-out-exit');
-                currentIndex = nextIndex;
-                elements.currentImg.innerText = currentIndex + 1;
-
-                applyImageLayout(activeSlide);
-
-                activeSlide.classList.add('active', 'zoom-out-enter');
-
-                transitionPrevSlide = prevSlide;
-                transitionActiveSlide = activeSlide;
-
+                // Speicher des vorherigen Bildes verzögert freigeben (nach dem Fade-out)
                 const oldSlide = prevSlide;
-                activeTransitionTimeout = setTimeout(() => {
-                    activeTransitionTimeout = null;
-                    oldSlide.classList.remove('active', 'exiting', 'zoom-out-exit');
-                    activeSlide.classList.remove('zoom-out-enter');
-                    clearActiveTransition();
-                    // Speicher des vorherigen Bildes freigeben
-                    if (oldSlide.src && oldSlide.src.startsWith('blob:')) {
+                setTimeout(() => {
+                    if (oldSlide && !oldSlide.classList.contains('active') && oldSlide.src && oldSlide.src.startsWith('blob:')) {
                         URL.revokeObjectURL(oldSlide.src);
                         oldSlide.src = '';
                     }
-                }, 1500);
+                }, 1600);
 
-                updateFavIcon();
-                updateInfoDisplay();
                 if (!isPaused) {
                     clearInterval(slideshowInterval);
                     const time = parseInt(elements.intervalSelect.value) * 1000;
                     slideshowInterval = setInterval(() => nextSlide(1), time);
                 }
-                return;
-            }
+            };
 
-            // Standard-Übergänge
-            prevSlide.classList.remove('active', 'ken-burns', 'slide-in');
-
-            currentIndex = nextIndex;
-            elements.currentImg.innerText = currentIndex + 1;
-
-            applyImageLayout(activeSlide);
-
-            activeSlide.classList.add('active');
-            if (effect === 'kenburns') activeSlide.classList.add('ken-burns');
-            if (effect === 'slide') activeSlide.classList.add('slide-in');
-
-            updateFavIcon();
-            updateInfoDisplay();
-
-            // Speicher des vorherigen Bildes verzögert freigeben (nach dem Fade-out)
-            const oldSlide = prevSlide;
-            setTimeout(() => {
-                if (oldSlide && !oldSlide.classList.contains('active') && oldSlide.src && oldSlide.src.startsWith('blob:')) {
-                    URL.revokeObjectURL(oldSlide.src);
-                    oldSlide.src = '';
+            // Dynamisch das nächste Bild laden, falls noch nicht geladen (Spart Speicher!)
+            if (!activeSlide.src || activeSlide.src === window.location.href || activeSlide.src.startsWith('data:')) {
+                const imgObj = imageFiles[nextIndex];
+                activeSlide.onload = () => {
+                    triggerTransition();
+                };
+                activeSlide.onerror = () => {
+                    console.error("Fehler beim Laden des Bildes:", imgObj.file.name);
+                    triggerTransition();
+                };
+                activeSlide.src = URL.createObjectURL(imgObj.file);
+            } else {
+                // Bild ist bereits geladen
+                if (activeSlide.complete && activeSlide.naturalWidth > 0) {
+                    triggerTransition();
+                } else {
+                    activeSlide.onload = () => {
+                        triggerTransition();
+                    };
+                    activeSlide.onerror = () => {
+                        triggerTransition();
+                    };
                 }
-            }, 1600);
-
-            if (!isPaused) {
-                clearInterval(slideshowInterval);
-                const time = parseInt(elements.intervalSelect.value) * 1000;
-                slideshowInterval = setInterval(() => nextSlide(1), time);
             }
         }
 
@@ -1877,54 +1898,59 @@
 
         // Konfig Export
         elements.exportBtn.onclick = async () => {
-            const config = {
-                rssFeeds: rssFeeds,
-                rssEnabled: elements.rssEnabled.checked,
-                interval: elements.intervalSelect.value,
-                effect: elements.effectSelect.value,
-                weatherEnabled: elements.weatherEnabled.checked,
-                weatherApiKey: elements.weatherApiKeyInput.value.trim(),
-                city: elements.cityInput.value,
-                wakeLockEnabled: elements.wakeLockEnabled.checked,
-                lang: currentLang,
-                dynamicPlacement: elements.dynamicPlacement.checked
-            };
+            try {
+                const config = {
+                    rssFeeds: rssFeeds,
+                    rssEnabled: elements.rssEnabled.checked,
+                    interval: elements.intervalSelect.value,
+                    effect: elements.effectSelect.value,
+                    weatherEnabled: elements.weatherEnabled.checked,
+                    weatherApiKey: elements.weatherApiKeyInput.value.trim(),
+                    city: elements.cityInput.value,
+                    wakeLockEnabled: elements.wakeLockEnabled.checked,
+                    lang: currentLang,
+                    dynamicPlacement: elements.dynamicPlacement.checked
+                };
 
-            // Versuche modernen File System Access API Save-Picker (perfekt für PWAs in Edge/Chrome)
-            if (window.showSaveFilePicker) {
-                try {
-                    const handle = await window.showSaveFilePicker({
-                        suggestedName: 'slideshow-config.json',
-                        types: [{
-                            description: 'JSON Konfiguration',
-                            accept: { 'application/json': ['.json'] }
-                        }]
-                    });
-                    const writable = await handle.createWritable();
-                    await writable.write(JSON.stringify(config, null, 2));
-                    await writable.close();
-                    return; // Erfolgreich gespeichert!
-                } catch (err) {
-                    console.log('showSaveFilePicker abgebrochen oder fehlgeschlagen, nutze Fallback:', err);
-                    // Falls Benutzer abbricht, nicht weitermachen, außer bei Fehler
-                    if (err.name === 'AbortError') return;
+                // Versuche modernen File System Access API Save-Picker (perfekt für PWAs in Edge/Chrome)
+                if (window.showSaveFilePicker) {
+                    try {
+                        const handle = await window.showSaveFilePicker({
+                            suggestedName: 'slideshow-config.json',
+                            types: [{
+                                description: 'JSON Konfiguration',
+                                accept: { 'application/json': ['.json'] }
+                            }]
+                        });
+                        const writable = await handle.createWritable();
+                        await writable.write(JSON.stringify(config, null, 2));
+                        await writable.close();
+                        return; // Erfolgreich gespeichert!
+                    } catch (err) {
+                        console.log('showSaveFilePicker abgebrochen oder fehlgeschlagen, nutze Fallback:', err);
+                        // Falls Benutzer abbricht, nicht weitermachen, außer bei Fehler
+                        if (err.name === 'AbortError') return;
+                    }
                 }
-            }
 
-            // Fallback für Browser, die showSaveFilePicker nicht unterstützen
-            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'slideshow-config.json';
-            document.body.appendChild(a); // Ins DOM einhängen für PWA-Sicherheit
-            a.click();
-            document.body.removeChild(a);
-            
-            // Verzögerter Entzug der URL, um den Download nicht abzuwürgen
-            setTimeout(() => {
-                URL.revokeObjectURL(url);
-            }, 10000);
+                // Fallback für Browser, die showSaveFilePicker nicht unterstützen
+                const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'slideshow-config.json';
+                document.body.appendChild(a); // Ins DOM einhängen für PWA-Sicherheit
+                a.click();
+                document.body.removeChild(a);
+                
+                // Verzögerter Entzug der URL, um den Download nicht abzuwürgen
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                }, 10000);
+            } catch (err) {
+                alert("Fehler beim Exportieren: " + err.message);
+                console.error(err);
+            }
         };
 
         // Konfig Import
@@ -2004,8 +2030,16 @@
         window.addEventListener('resize', adjustTickerSpeed);
 
         document.addEventListener('visibilitychange', async () => {
-            if (document.visibilityState === 'visible' && elements.setupDiv.style.display === 'none') {
-                await requestWakeLock();
+            if (document.visibilityState === 'visible') {
+                if (elements.setupDiv.style.display === 'none') {
+                    await requestWakeLock();
+                    if (!isPaused) {
+                        clearInterval(slideshowInterval);
+                        const time = parseInt(elements.intervalSelect.value) * 1000;
+                        slideshowInterval = setInterval(() => nextSlide(1), time);
+                        console.log("Diashow-Intervall nach Aktivierung/Wake-up neu gestartet.");
+                    }
+                }
             }
         });
 
