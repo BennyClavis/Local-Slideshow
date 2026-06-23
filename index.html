@@ -153,6 +153,13 @@
             z-index: 10;
         }
 
+        /* Verhindert das Anzeigen von leeren Bilderrahmen oder kaputten Bildsymbolen */
+        .slide:not([src]), .slide[src=""], .slide[src="about:blank"] {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+
         /* Ken Burns Animation */
         .ken-burns {
             animation: kenburns-anim 30s ease-out forwards;
