@@ -1490,6 +1490,18 @@
             slide.style.top = `${currentLayout.top}%`;
         }
 
+        function cleanupUnusedSlideSources() {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, idx) => {
+                if (idx !== currentIndex && !slide.classList.contains('active')) {
+                    if (slide.src && slide.src.startsWith('blob:')) {
+                        URL.revokeObjectURL(slide.src);
+                        slide.src = '';
+                    }
+                }
+            });
+        }
+
         function clearActiveTransition() {
             if (activePuzzleContainer) {
                 activePuzzleContainer.remove();
@@ -1515,6 +1527,8 @@
             exitingSlides.forEach(s => s.classList.remove('exiting', 'zoom-out-exit', 'puzzle-exit'));
             const enterSlides = document.querySelectorAll('.slide.zoom-out-enter');
             enterSlides.forEach(s => s.classList.remove('zoom-out-enter'));
+
+            cleanupUnusedSlideSources();
         }
 
         function getContainImageRect(imgWidth, imgHeight, containerWidth, containerHeight) {
@@ -1621,9 +1635,18 @@
 
             const prevSlide = slides[currentIndex];
             const nextIndex = (currentIndex + direction + slides.length) % slides.length;
-            const activeSlide = slides[nextIndex];
+            
+            currentIndex = nextIndex;
+            elements.currentImg.innerText = currentIndex + 1;
+
+            const activeSlide = slides[currentIndex];
+            const targetIndex = currentIndex;
 
             const triggerTransition = () => {
+                if (currentIndex !== targetIndex) {
+                    return; // Veralteter Aufruf durch schnelle Navigation oder verzögerten Ladezustand
+                }
+
                 let effect = elements.effectSelect.value;
                 if (effect === 'random') {
                     const MathEffects = ['fade', 'kenburns', 'slide', 'zoomout', 'puzzle'];
@@ -1632,8 +1655,6 @@
 
                 if (effect === 'puzzle') {
                     prevSlide.classList.add('exiting', 'puzzle-exit');
-                    currentIndex = nextIndex;
-                    elements.currentImg.innerText = currentIndex + 1;
 
                     applyImageLayout(activeSlide);
 
@@ -1658,8 +1679,6 @@
 
                 if (effect === 'zoomout') {
                     prevSlide.classList.add('exiting', 'zoom-out-exit');
-                    currentIndex = nextIndex;
-                    elements.currentImg.innerText = currentIndex + 1;
 
                     applyImageLayout(activeSlide);
 
@@ -1694,9 +1713,6 @@
                 // Standard-Übergänge
                 prevSlide.classList.remove('active', 'ken-burns', 'slide-in');
 
-                currentIndex = nextIndex;
-                elements.currentImg.innerText = currentIndex + 1;
-
                 applyImageLayout(activeSlide);
 
                 activeSlide.classList.add('active');
@@ -1724,7 +1740,7 @@
 
             // Dynamisch das nächste Bild laden, falls noch nicht geladen (Spart Speicher!)
             if (!activeSlide.src || activeSlide.src === window.location.href || activeSlide.src.startsWith('data:')) {
-                const imgObj = imageFiles[nextIndex];
+                const imgObj = imageFiles[targetIndex];
                 activeSlide.onload = () => {
                     triggerTransition();
                 };
