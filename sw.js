@@ -1,7 +1,8 @@
-const CACHE_NAME = 'diashow-cache-v3';
+const CACHE_NAME = 'diashow-cache-v4';
 const ASSETS = [
   'index.html',
   'manifest.json',
+  'privacy.html',
   'icon-192.png',
   'icon-512.png'
 ];
