@@ -247,7 +247,7 @@
         </table>
 
         <div style="margin-top: 30px;">
-            <a href="index.html" style="font-weight: bold;">&larr; Zurück zur Diashow / Back to Slideshow</a>
+            <a href="index.html" id="backLink" style="font-weight: bold;">&larr; Zurück zur Diashow / Back to Slideshow</a>
         </div>
 
         <footer>
@@ -270,6 +270,19 @@
                 console.error('Fehler beim Kopieren:', err);
                 alert('Kopieren fehlgeschlagen. Bitte kopieren Sie die URL manuell.');
             });
+        }
+
+        // Falls die Seite in einem neuen Tab geöffnet wurde, schließen wir ihn einfach beim Zurückgehen
+        if (window.opener || window.history.length === 1) {
+            const backLink = document.getElementById('backLink');
+            if (backLink) {
+                backLink.href = "#";
+                backLink.onclick = function(e) {
+                    e.preventDefault();
+                    window.close();
+                };
+                backLink.innerHTML = "&larr; Tab schließen / Close Tab";
+            }
         }
     </script>
 </body>
