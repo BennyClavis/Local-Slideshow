@@ -1,8 +1,9 @@
-const CACHE_NAME = 'diashow-cache-v7';
+const CACHE_NAME = 'diashow-cache-v8';
 const ASSETS = [
   'index.html',
   'manifest.json',
   'privacy.html',
+  'rss-feeds.html',
   'icon-192.png',
   'icon-512.png'
 ];

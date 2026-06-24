@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benny's RSS-Feed Abos - Browser Diashow</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+        }
+
+        h1 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 0;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        p {
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+
+        a {
+            color: #66b2ff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            font-size: 0.95rem;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        th {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: background 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .copied {
+            background: #007bff !important;
+        }
+
+        .category-badge {
+            background: #343a40;
+            color: #ddd;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            border: 1px solid #444;
+            white-space: nowrap;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #888;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Benny's RSS-Feed Abos / Subscriptions</h1>
+        <p>
+            Hier finden Sie eine Übersicht meiner aktuell abonnierten RSS-Feeds. Sie können jede Feed-Adresse per Knopfdruck in Ihre Zwischenablage kopieren und anschließend im Hauptmenü der Diashow eintragen.
+            <br>
+            <span style="opacity: 0.7; font-size: 0.85rem;">
+                Here you can find an overview of my current RSS feed subscriptions. You can copy any feed URL to your clipboard at the click of a button and then add it in the slideshow's main menu.
+            </span>
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name / Quelle</th>
+                    <th>Kategorie / Category</th>
+                    <th>RSS-Feed URL</th>
+                    <th>Aktion / Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Tagesschau -->
+                <tr>
+                    <td><strong>Tagesschau</strong></td>
+                    <td><span class="category-badge">Nachrichten / News</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://www.tagesschau.de/xml/rss2/</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://www.tagesschau.de/xml/rss2/', this)">Kopieren</button></td>
+                </tr>
+                <!-- Netzwelt -->
+                <tr>
+                    <td><strong>Netzwelt</strong></td>
+                    <td><span class="category-badge">Computer & Tech</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://feeds.feedburner.com/netzwelt</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://feeds.feedburner.com/netzwelt', this)">Kopieren</button></td>
+                </tr>
+                <!-- Winfuture -->
+                <tr>
+                    <td><strong>WinFuture</strong></td>
+                    <td><span class="category-badge">Computer & Tech</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://static.winfuture.de/feeds/WinFuture-News-rss2.0.xml</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://static.winfuture.de/feeds/WinFuture-News-rss2.0.xml', this)">Kopieren</button></td>
+                </tr>
+                <!-- Heise -->
+                <tr>
+                    <td><strong>Heise</strong></td>
+                    <td><span class="category-badge">Computer & Tech</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://www.heise.de/newsticker/heise.rdf</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://www.heise.de/newsticker/heise.rdf', this)">Kopieren</button></td>
+                </tr>
+                <!-- Chip -->
+                <tr>
+                    <td><strong>Chip</strong></td>
+                    <td><span class="category-badge">Computer & Tech</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://www.chip.de/rss/chip_komplett.xml</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://www.chip.de/rss/chip_komplett.xml', this)">Kopieren</button></td>
+                </tr>
+                <!-- PC Welt -->
+                <tr>
+                    <td><strong>PC Welt</strong></td>
+                    <td><span class="category-badge">Computer & Tech</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://www.pcwelt.de/feed?story_types=reviews%2Cbest-picks%2Creview</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://www.pcwelt.de/feed?story_types=reviews%2Cbest-picks%2Creview', this)">Kopieren</button></td>
+                </tr>
+                <!-- Spiegel -->
+                <tr>
+                    <td><strong>Spiegel</strong></td>
+                    <td><span class="category-badge">Nachrichten / News</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://www.spiegel.de/index.rss</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://www.spiegel.de/index.rss', this)">Kopieren</button></td>
+                </tr>
+                <!-- TAZ -->
+                <tr>
+                    <td><strong>TAZ</strong></td>
+                    <td><span class="category-badge">Nachrichten / News</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://taz.de/!p4608;rss/</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://taz.de/!p4608;rss/', this)">Kopieren</button></td>
+                </tr>
+                <!-- Die Zeit -->
+                <tr>
+                    <td><strong>Die Zeit</strong></td>
+                    <td><span class="category-badge">Nachrichten / News</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://newsfeed.zeit.de/</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://newsfeed.zeit.de/', this)">Kopieren</button></td>
+                </tr>
+                <!-- Focus -->
+                <tr>
+                    <td><strong>Focus</strong></td>
+                    <td><span class="category-badge">Nachrichten / News</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://www.focus.de/rss</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://www.focus.de/rss', this)">Kopieren</button></td>
+                </tr>
+                <!-- N-TV -->
+                <tr>
+                    <td><strong>N-TV Politik</strong></td>
+                    <td><span class="category-badge">Nachrichten / News</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://www.n-tv.de/politik/rss</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://www.n-tv.de/politik/rss', this)">Kopieren</button></td>
+                </tr>
+                <!-- Ratgeber Guide -->
+                <tr>
+                    <td><strong>Ratgeber Guide</strong></td>
+                    <td><span class="category-badge">Ratgeber / Guide</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://www.ratgeber-guide-24.de/feed/</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://www.ratgeber-guide-24.de/feed/', this)">Kopieren</button></td>
+                </tr>
+                <!-- Angela Carstensen -->
+                <tr>
+                    <td><strong>Angela Carstensen</strong></td>
+                    <td><span class="category-badge">Blog</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://angela-carstensen.de/feed</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://angela-carstensen.de/feed', this)">Kopieren</button></td>
+                </tr>
+                <!-- Zimt Magazin -->
+                <tr>
+                    <td><strong>Zimt Magazin</strong></td>
+                    <td><span class="category-badge">Kultur / Magazine</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://zimtmagazin.at/feed</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://zimtmagazin.at/feed', this)">Kopieren</button></td>
+                </tr>
+                <!-- All AI -->
+                <tr>
+                    <td><strong>All AI</strong></td>
+                    <td><span class="category-badge">Tech & AI</span></td>
+                    <td style="font-family: monospace; font-size: 0.85rem; color: #aaa; word-break: break-all;">https://www.all-ai.de/rss-feed</td>
+                    <td><button class="copy-btn" onclick="copyToClipboard('https://www.all-ai.de/rss-feed', this)">Kopieren</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 30px;">
+            <a href="index.html" style="font-weight: bold;">&larr; Zurück zur Diashow / Back to Slideshow</a>
+        </div>
+
+        <footer>
+            Stand / As of: 24.06.2026<br>
+            Zusammengestellt für die App "Browser Diashow"
+        </footer>
+    </div>
+
+    <script>
+        function copyToClipboard(url, button) {
+            navigator.clipboard.writeText(url).then(() => {
+                const originalText = button.innerText;
+                button.innerText = 'Kopiert!';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Fehler beim Kopieren:', err);
+                alert('Kopieren fehlgeschlagen. Bitte kopieren Sie die URL manuell.');
+            });
+        }
+    </script>
+</body>
+
+</html>
