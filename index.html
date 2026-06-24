@@ -265,6 +265,7 @@
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9);
             z-index: 50;
             font-weight: 300;
+            transition: opacity 0.5s;
         }
 
         #time {
@@ -403,6 +404,7 @@
             border-top: 1px solid #333;
             font-size: 1.1rem;
             color: #eee;
+            transition: opacity 0.5s;
         }
 
         #rss-content {
@@ -469,6 +471,18 @@
             100% {
                 transform: translateX(-100%);
             }
+        }
+
+        /* Inaktiver Mauszeiger blendet alle Bedienelemente aus (außer Uhrzeit und Wetter) */
+        body.mouse-inactive #menu-btn,
+        body.mouse-inactive #fav-btn,
+        body.mouse-inactive #delete-btn,
+        body.mouse-inactive #reload-btn,
+        body.mouse-inactive #info-btn,
+        body.mouse-inactive #progress-overlay,
+        body.mouse-inactive #rss-ticker {
+            opacity: 0 !important;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -597,7 +611,7 @@
         </div>
 
         <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 10px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; color: #888;">
-            <span id="app-version">v1.2.0</span>
+            <span id="app-version">v1.2.1</span>
             <a href="privacy.html" target="_blank" id="privacyLink" style="color: #66b2ff; text-decoration: none;">Datenschutzerklärung</a>
             <span id="resetBtn" style="cursor: pointer; color: #dc3545; text-decoration: underline;" title="Alle Einstellungen und Ordner löschen">App zurücksetzen</span>
         </div>
@@ -2129,6 +2143,7 @@
                 // Cursor wieder anzeigen und Timer löschen
                 clearTimeout(mouseMoveTimeout);
                 document.body.style.cursor = 'default';
+                document.body.classList.remove('mouse-inactive');
             }
         });
 
@@ -2172,11 +2187,13 @@
 
         function resetMouseCursorTimer() {
             document.body.style.cursor = 'default';
+            document.body.classList.remove('mouse-inactive');
             clearTimeout(mouseMoveTimeout);
 
             if (elements.setupDiv.style.display === 'none') {
                 mouseMoveTimeout = setTimeout(() => {
                     document.body.style.cursor = 'none';
+                    document.body.classList.add('mouse-inactive');
                 }, 2500);
             }
         }
