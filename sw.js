@@ -1,4 +1,4 @@
-const CACHE_NAME = 'diashow-cache-v9';
+const CACHE_NAME = 'diashow-cache-v10';
 const ASSETS = [
   'index.html',
   'manifest.json',

@@ -36,13 +36,14 @@
             transform: translate(-50%, -50%);
             text-align: center;
             background: rgba(30, 30, 30, 0.85);
-            padding: 30px;
+            padding: 25px 20px;
             border-radius: 10px;
             z-index: 200;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
             max-height: 90vh;
             overflow-y: auto;
-            width: 450px;
+            width: 90%;
+            max-width: 450px;
         }
 
         input,
@@ -483,6 +484,28 @@
             opacity: 0 !important;
             pointer-events: none;
         }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 480px) {
+            #setup {
+                width: 95%;
+                padding: 20px 15px;
+            }
+            #setup h2 {
+                font-size: 1.4rem;
+                margin-top: 30px;
+            }
+            input, select, button {
+                margin: 5px;
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            #browserWarning {
+                margin: 35px 0 10px 0;
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 
@@ -509,6 +532,7 @@
             <small>Keine Ordner ausgewählt</small>
         </div>
         <button id="addFolderBtn">+ Ordner hinzufügen</button>
+        <input type="file" id="fallbackFileInput" multiple accept="image/*" style="display:none;">
         <button id="restoreBtn" style="display:none; background:#6c757d;">Zugriff wiederherstellen</button>
 
         <hr style="border:0; border-top:1px solid #444; margin:20px 0;">
@@ -610,7 +634,7 @@
         </div>
 
         <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 10px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; color: #888;">
-            <span id="app-version">v1.2.2</span>
+            <span id="app-version">v1.2.4</span>
             <a href="privacy.html" target="_blank" id="privacyLink" style="color: #66b2ff; text-decoration: none;">Datenschutzerklärung</a>
             <span id="resetBtn" style="cursor: pointer; color: #dc3545; text-decoration: underline;" title="Alle Einstellungen und Ordner löschen">App zurücksetzen</span>
         </div>
@@ -721,7 +745,7 @@
                 menuBtnTitle: "Menü / Beenden (Esc)",
                 helpTriggerTitle: "Bedienungsanleitung / Hilfe",
                 rssLoading: "Lade Nachrichten...",
-                browserWarning: "<strong>Browser-Kompatibilität:</strong> Ihr Webbrowser (z. B. Firefox) unterstützt das direkte Laden von lokalen Ordnern nicht. Bitte nutzen Sie <strong>Google Chrome</strong>, <strong>Microsoft Edge</strong>, <strong>Brave</strong> oder <strong>Opera</strong>, um die Diashow in vollem Umfang zu nutzen.",
+                browserWarning: "<strong>Kompatibilitätshinweis:</strong> Ihr Webbrowser (z. B. Safari auf dem iPad/iPhone oder Firefox) unterstützt das direkte Laden von Ordnern nicht. Sie können jedoch Bilder manuell über die Schaltfläche unten auswählen.",
                 privacyLinkText: "Datenschutzerklärung",
                 resetLinkText: "App zurücksetzen",
                 resetBtnTitle: "Alle Einstellungen, Ordner und Favoriten löschen",
@@ -788,7 +812,7 @@
                 menuBtnTitle: "Menu / Stop (Esc)",
                 helpTriggerTitle: "User Guide / Help",
                 rssLoading: "Loading news...",
-                browserWarning: "<strong>Browser Compatibility:</strong> Your web browser (e.g. Firefox) does not support direct loading of local folders. Please use <strong>Google Chrome</strong>, <strong>Microsoft Edge</strong>, <strong>Brave</strong>, or <strong>Opera</strong> to use the slideshow with full features.",
+                browserWarning: "<strong>Compatibility Note:</strong> Your web browser (e.g. Safari on iPad/iPhone or Firefox) does not support direct folder loading. However, you can select images manually using the button below.",
                 privacyLinkText: "Privacy Policy",
                 resetLinkText: "Reset App",
                 resetBtnTitle: "Clear all settings, folders and favorites",
@@ -941,6 +965,7 @@
 
         const elements = {
             addFolderBtn: document.getElementById('addFolderBtn'),
+            fallbackFileInput: document.getElementById('fallbackFileInput'),
             restoreBtn: document.getElementById('restoreBtn'),
             folderList: document.getElementById('folderList'),
             startBtn: document.getElementById('startBtn'),
@@ -1024,8 +1049,11 @@
             const tx = db.transaction(STORE_NAME, 'readwrite');
             const store = tx.objectStore(STORE_NAME);
             await store.clear();
+            let savedIndex = 0;
             for (let i = 0; i < folderHandles.length; i++) {
-                store.put(folderHandles[i], i);
+                if (!folderHandles[i].isFallback) {
+                    store.put(folderHandles[i], savedIndex++);
+                }
             }
             return new Promise(resolve => tx.oncomplete = resolve);
         }
@@ -1057,7 +1085,11 @@
             // 1. Text und Placeholders im Setup
             document.getElementById('setup-title').innerText = texts.setupTitle;
             document.getElementById('setup-select-folder-text').innerText = texts.selectFolderText;
-            elements.addFolderBtn.innerText = texts.addFolderBtn;
+            if (!window.showDirectoryPicker) {
+                elements.addFolderBtn.innerText = lang === 'de' ? '+ Bilder auswählen' : '+ Select Images';
+            } else {
+                elements.addFolderBtn.innerText = texts.addFolderBtn;
+            }
             elements.restoreBtn.innerText = texts.restoreBtn;
             document.getElementById('label-interval').firstChild.textContent = texts.labelInterval;
             document.getElementById('label-effect').firstChild.textContent = texts.labelEffect;
@@ -1138,6 +1170,10 @@
         }
 
         async function addFolder() {
+            if (!window.showDirectoryPicker) {
+                elements.fallbackFileInput.click();
+                return;
+            }
             try {
                 const handle = await window.showDirectoryPicker();
                 if (!folderHandles.find(h => h.name === handle.name)) {
@@ -1301,19 +1337,23 @@
                     const parentFolder = folderHandles.find(h => h.name === currentImg.folderName);
                     if (!parentFolder) throw new Error("Ordner-Handle nicht gefunden.");
 
-                    // Berechtigung prüfen und anfordern für Schreibzugriff
-                    if (await parentFolder.queryPermission({ mode: 'readwrite' }) !== 'granted') {
-                        const perm = await parentFolder.requestPermission({ mode: 'readwrite' });
-                        if (perm !== 'granted') {
-                            alert(uiTexts[currentLang].deletePermDenied);
-                            if (!wasPaused) togglePause();
-                            return;
+                    if (!parentFolder.isFallback) {
+                        // Berechtigung prüfen und anfordern für Schreibzugriff
+                        if (await parentFolder.queryPermission({ mode: 'readwrite' }) !== 'granted') {
+                            const perm = await parentFolder.requestPermission({ mode: 'readwrite' });
+                            if (perm !== 'granted') {
+                                alert(uiTexts[currentLang].deletePermDenied);
+                                if (!wasPaused) togglePause();
+                                return;
+                            }
                         }
-                    }
 
-                    // Datei löschen
-                    await parentFolder.removeEntry(currentImg.handle.name);
-                    console.log(`Datei gelöscht: ${currentImg.handle.name}`);
+                        // Datei löschen
+                        await parentFolder.removeEntry(currentImg.handle.name);
+                        console.log(`Datei gelöscht: ${currentImg.handle.name}`);
+                    } else {
+                        console.log(`Datei aus Diashow entfernt (Fallback): ${currentImg.handle.name}`);
+                    }
 
                     // Aus dem Array löschen
                     imageFiles.splice(currentIndex, 1);
@@ -1386,6 +1426,12 @@
 
             const newImageFiles = [];
             for (const handle of folderHandles) {
+                if (handle.isFallback) {
+                    for (const file of handle.files) {
+                        newImageFiles.push({ file, handle: { name: file.name }, folderName: handle.name });
+                    }
+                    continue;
+                }
                 if (await handle.queryPermission({ mode: 'readwrite' }) !== 'granted') {
                     if (await handle.queryPermission({ mode: 'read' }) !== 'granted') {
                         continue;
@@ -1951,6 +1997,20 @@
 
         // --- Event Listeners ---
         elements.addFolderBtn.onclick = addFolder;
+        elements.fallbackFileInput.onchange = (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                const mockHandle = {
+                    name: currentLang === 'de' ? 'Ausgewählte Bilder' : 'Selected Images',
+                    isFallback: true,
+                    files: files
+                };
+                folderHandles.push(mockHandle);
+                renderFolderList();
+                rescanFolders(true);
+                e.target.value = '';
+            }
+        };
         elements.startBtn.onclick = startSlideshow;
 
         // Zugriff wiederherstellen (Benutzerinteraktion erforderlich)
@@ -2224,9 +2284,9 @@
         // Browser-Kompatibilitätsprüfung
         if (!window.showDirectoryPicker) {
             elements.browserWarning.style.display = 'block';
-            elements.addFolderBtn.disabled = true;
-            elements.addFolderBtn.style.opacity = '0.5';
-            elements.addFolderBtn.style.cursor = 'not-allowed';
+            elements.browserWarning.style.background = 'rgba(255, 152, 0, 0.15)';
+            elements.browserWarning.style.border = '1px solid #ff9800';
+            elements.browserWarning.style.color = '#ffe0b2';
             elements.restoreBtn.disabled = true;
             elements.restoreBtn.style.opacity = '0.5';
             elements.restoreBtn.style.cursor = 'not-allowed';
