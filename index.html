@@ -634,7 +634,7 @@
         </div>
 
         <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 10px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; color: #888;">
-            <span id="app-version">v1.2.6</span>
+            <span id="app-version">v1.2.7</span>
             <a href="privacy.html" target="_blank" id="privacyLink" style="color: #66b2ff; text-decoration: none;">Datenschutzerklärung</a>
             <span id="resetBtn" style="cursor: pointer; color: #dc3545; text-decoration: underline;" title="Alle Einstellungen und Ordner löschen">App zurücksetzen</span>
         </div>
@@ -1572,7 +1572,10 @@
         function cleanupUnusedSlideSources() {
             const slides = document.querySelectorAll('.slide');
             slides.forEach((slide, idx) => {
-                if (idx !== currentIndex && !slide.classList.contains('active')) {
+                // Ein Bild darf nicht bereinigt werden, wenn es das aktuelle Bild ist 
+                // oder an einer aktiven Transition beteiligt ist.
+                if (idx !== currentIndex && slide !== transitionPrevSlide && slide !== transitionActiveSlide) {
+                    slide.classList.remove('active', 'exiting', 'zoom-out-exit', 'puzzle-exit', 'ken-burns', 'slide-in');
                     if (slide.src && slide.src.startsWith('blob:')) {
                         URL.revokeObjectURL(slide.src);
                         slide.src = '';
@@ -1790,6 +1793,9 @@
                 }
 
                 // Standard-Übergänge
+                transitionPrevSlide = prevSlide;
+                transitionActiveSlide = activeSlide;
+
                 prevSlide.classList.remove('active', 'ken-burns', 'slide-in');
 
                 applyImageLayout(activeSlide);
@@ -1803,7 +1809,10 @@
 
                 // Speicher des vorherigen Bildes verzögert freigeben (nach dem Fade-out)
                 const oldSlide = prevSlide;
-                setTimeout(() => {
+                activeTransitionTimeout = setTimeout(() => {
+                    activeTransitionTimeout = null;
+                    transitionPrevSlide = null;
+                    transitionActiveSlide = null;
                     if (oldSlide && !oldSlide.classList.contains('active') && oldSlide.src && oldSlide.src.startsWith('blob:')) {
                         URL.revokeObjectURL(oldSlide.src);
                         oldSlide.src = '';
