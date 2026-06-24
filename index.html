@@ -634,7 +634,7 @@
         </div>
 
         <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 10px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; color: #888;">
-            <span id="app-version">v1.2.4</span>
+            <span id="app-version">v1.2.5</span>
             <a href="privacy.html" target="_blank" id="privacyLink" style="color: #66b2ff; text-decoration: none;">Datenschutzerklärung</a>
             <span id="resetBtn" style="cursor: pointer; color: #dc3545; text-decoration: underline;" title="Alle Einstellungen und Ordner löschen">App zurücksetzen</span>
         </div>
@@ -1237,6 +1237,12 @@
         async function startSlideshow() {
             imageFiles = [];
             for (const handle of folderHandles) {
+                if (handle.isFallback) {
+                    for (const file of handle.files) {
+                        imageFiles.push({ file, handle: { name: file.name }, folderName: handle.name });
+                    }
+                    continue;
+                }
                 // Berechtigung prüfen (wichtig für persistente Handles)
                 if (await handle.queryPermission() !== 'granted') {
                     if (await handle.requestPermission() !== 'granted') continue;
@@ -2016,6 +2022,7 @@
         // Zugriff wiederherstellen (Benutzerinteraktion erforderlich)
         elements.restoreBtn.onclick = async () => {
             for (const handle of folderHandles) {
+                if (handle.isFallback) continue;
                 if (await handle.requestPermission({ mode: 'read' }) !== 'granted') {
                     alert(uiTexts[currentLang].folderAccessDenied.replace('{name}', handle.name));
                     return;
