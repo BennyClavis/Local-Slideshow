@@ -634,7 +634,7 @@
         </div>
 
         <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 10px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; color: #888;">
-            <span id="app-version">v1.2.5</span>
+            <span id="app-version">v1.2.6</span>
             <a href="privacy.html" target="_blank" id="privacyLink" style="color: #66b2ff; text-decoration: none;">Datenschutzerklärung</a>
             <span id="resetBtn" style="cursor: pointer; color: #dc3545; text-decoration: underline;" title="Alle Einstellungen und Ordner löschen">App zurücksetzen</span>
         </div>
@@ -2279,6 +2279,45 @@
         }
 
         window.addEventListener('mousemove', resetMouseCursorTimer);
+
+        // Touch-Gesten (Wischen) und Interaktionserkennung für Mobilgeräte
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        window.addEventListener('touchstart', (e) => {
+            resetMouseCursorTimer();
+            if (elements.setupDiv.style.display === 'none') {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+            if (elements.setupDiv.style.display === 'none') {
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                handleSwipeGesture();
+            }
+        }, { passive: true });
+
+        function handleSwipeGesture() {
+            const minSwipeDistance = 50; // Mindestdistanz in Pixeln für einen Swipe
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+
+            // Prüfen, ob die Bewegung hauptsächlich horizontal war
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > minSwipeDistance) {
+                if (diffX > 0) {
+                    // Von links nach rechts gewischt -> Vorheriges Bild
+                    nextSlide(-1);
+                } else {
+                    // Von rechts nach links gewischt -> Nächstes Bild
+                    nextSlide(1);
+                }
+            }
+        }
 
         // Init
         setInterval(updateClock, 1000);
