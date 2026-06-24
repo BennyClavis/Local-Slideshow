@@ -473,14 +473,13 @@
             }
         }
 
-        /* Inaktiver Mauszeiger blendet alle Bedienelemente aus (außer Uhrzeit und Wetter) */
+        /* Inaktiver Mauszeiger blendet alle Bedienelemente aus (außer Uhrzeit, Wetter und RSS-Ticker) */
         body.mouse-inactive #menu-btn,
         body.mouse-inactive #fav-btn,
         body.mouse-inactive #delete-btn,
         body.mouse-inactive #reload-btn,
         body.mouse-inactive #info-btn,
-        body.mouse-inactive #progress-overlay,
-        body.mouse-inactive #rss-ticker {
+        body.mouse-inactive #progress-overlay {
             opacity: 0 !important;
             pointer-events: none;
         }
