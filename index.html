@@ -634,7 +634,7 @@
         </div>
 
         <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 10px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; color: #888;">
-            <span id="app-version">v1.2.7</span>
+            <span id="app-version">v1.2.8</span>
             <a href="privacy.html" target="_blank" id="privacyLink" style="color: #66b2ff; text-decoration: none;">Datenschutzerklärung</a>
             <span id="resetBtn" style="cursor: pointer; color: #dc3545; text-decoration: underline;" title="Alle Einstellungen und Ordner löschen">App zurücksetzen</span>
         </div>
@@ -1261,6 +1261,14 @@
             shuffleArray(imageFiles);
 
             elements.setupDiv.style.display = 'none';
+            
+            // Fullscreen anfordern (blendet Navigationsleiste aus)
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(err => console.log("Fullscreen failed", err));
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
+            }
+
             isPaused = false;
             elements.status.style.opacity = "0";
             elements.progressOverlay.style.opacity = "0.7";
@@ -2209,6 +2217,14 @@
                 clearActiveTransition();
                 clearInterval(slideshowInterval);
                 isPaused = false;
+
+                // Fullscreen beenden
+                if (document.exitFullscreen && document.fullscreenElement) {
+                    document.exitFullscreen().catch(err => console.log("Exit fullscreen failed", err));
+                } else if (document.webkitExitFullscreen && document.webkitFullscreenElement) {
+                    document.webkitExitFullscreen();
+                }
+
                 elements.status.style.opacity = "0";
                 elements.progressOverlay.style.opacity = "0";
                 elements.favBtn.style.opacity = "0";

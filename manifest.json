@@ -3,7 +3,7 @@
   "short_name": "Diashow",
   "description": "Eine moderne PWA-Diashow zum Abspielen lokaler Fotos mit Übergangseffekten, Wetteranzeige und RSS-Feeds.",
   "start_url": "index.html",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#000000",
   "theme_color": "#1e1e1e",
   "orientation": "any",
