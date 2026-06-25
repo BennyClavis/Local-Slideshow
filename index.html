@@ -593,6 +593,14 @@
         </div>
 
         <div style="border: 1px solid #444; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: left;">
+            <label
+                style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none;">
+                <input type="checkbox" id="fullscreenEnabled" checked>
+                <span id="label-fullscreen-enabled">Automatisch Vollbild aktivieren</span>
+            </label>
+        </div>
+
+        <div style="border: 1px solid #444; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: left;">
             <strong id="label-rss-header">RSS-Feeds</strong><br>
             <label style="font-size: 12px;"><input type="checkbox" id="rssEnabled" checked> <span
                     id="label-rss-text">Laufband anzeigen</span></label>
@@ -634,7 +642,7 @@
         </div>
 
         <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 10px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; color: #888;">
-            <span id="app-version">v1.2.9</span>
+            <span id="app-version">v1.3.0</span>
             <a href="privacy.html" target="_blank" id="privacyLink" style="color: #66b2ff; text-decoration: none;">Datenschutzerklärung</a>
             <span id="resetBtn" style="cursor: pointer; color: #dc3545; text-decoration: underline;" title="Alle Einstellungen und Ordner löschen">App zurücksetzen</span>
         </div>
@@ -710,6 +718,7 @@
                 cityPlaceholder: "Stadt für Wetter (z.B. Berlin)",
                 labelWakeLock: "Standby & Bildschirmschoner verhindern",
                 labelDynamicPlacement: "Bilder abwechselnd verkleinert/versetzt anzeigen",
+                labelFullscreenEnabled: "Automatisch Vollbild aktivieren",
                 labelRssHeader: "RSS-Feeds",
                 labelRssText: "Laufband anzeigen",
                 rssInputPlaceholder: "RSS URL hinzufügen",
@@ -777,6 +786,7 @@
                 cityPlaceholder: "City for weather (e.g. London)",
                 labelWakeLock: "Prevent screensaver & standby",
                 labelDynamicPlacement: "Display images with dynamic sizes and offsets",
+                labelFullscreenEnabled: "Automatically enable fullscreen",
                 labelRssHeader: "RSS Feeds",
                 labelRssText: "Display scrolling news ticker",
                 rssInputPlaceholder: "Add RSS URL",
@@ -1036,6 +1046,7 @@
             langSelect: document.getElementById('langSelect'),
             browserWarning: document.getElementById('browserWarning'),
             dynamicPlacement: document.getElementById('dynamicPlacement'),
+            fullscreenEnabled: document.getElementById('fullscreenEnabled'),
             kofiLinkText: document.getElementById('kofiLinkText'),
             privacyLink: document.getElementById('privacyLink'),
             resetBtn: document.getElementById('resetBtn')
@@ -1134,6 +1145,7 @@
             elements.cityInput.placeholder = texts.cityPlaceholder;
             document.getElementById('label-wake-lock').innerText = texts.labelWakeLock;
             document.getElementById('label-dynamic-placement').innerText = texts.labelDynamicPlacement;
+            document.getElementById('label-fullscreen-enabled').innerText = texts.labelFullscreenEnabled;
             document.getElementById('label-rss-header').innerText = texts.labelRssHeader;
             document.getElementById('label-rss-text').innerText = texts.labelRssText;
             elements.rssInput.placeholder = texts.rssInputPlaceholder;
@@ -1289,11 +1301,13 @@
 
             elements.setupDiv.style.display = 'none';
             
-            // Fullscreen anfordern (blendet Navigationsleiste aus)
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen().catch(err => console.log("Fullscreen failed", err));
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                document.documentElement.webkitRequestFullscreen();
+            // Fullscreen anfordern (blendet Navigationsleiste aus), falls aktiviert
+            if (elements.fullscreenEnabled.checked) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(err => console.log("Fullscreen failed", err));
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                }
             }
 
             isPaused = false;
@@ -2006,7 +2020,8 @@
                 city: elements.cityInput.value,
                 wakeLockEnabled: elements.wakeLockEnabled.checked,
                 lang: currentLang,
-                dynamicPlacement: elements.dynamicPlacement.checked
+                dynamicPlacement: elements.dynamicPlacement.checked,
+                fullscreenEnabled: elements.fullscreenEnabled.checked
             };
             localStorage.setItem('slideshow_settings', JSON.stringify(config));
         }
@@ -2025,6 +2040,7 @@
                     elements.rssEnabled.checked = config.rssEnabled !== undefined ? config.rssEnabled : true;
                     elements.wakeLockEnabled.checked = config.wakeLockEnabled !== undefined ? config.wakeLockEnabled : true;
                     elements.dynamicPlacement.checked = config.dynamicPlacement !== undefined ? config.dynamicPlacement : false;
+                    elements.fullscreenEnabled.checked = config.fullscreenEnabled !== undefined ? config.fullscreenEnabled : true;
 
                     // Sichtbarkeit des Einstellungscontainers anpassen
                     elements.weatherSettingsSection.style.display = elements.weatherEnabled.checked ? 'block' : 'none';
@@ -2089,7 +2105,8 @@
                     city: elements.cityInput.value,
                     wakeLockEnabled: elements.wakeLockEnabled.checked,
                     lang: currentLang,
-                    dynamicPlacement: elements.dynamicPlacement.checked
+                    dynamicPlacement: elements.dynamicPlacement.checked,
+                    fullscreenEnabled: elements.fullscreenEnabled.checked
                 };
 
                 // Versuche modernen File System Access API Save-Picker (perfekt für PWAs in Edge/Chrome)
@@ -2150,6 +2167,7 @@
                 if (config.rssEnabled !== undefined) elements.rssEnabled.checked = config.rssEnabled;
                 if (config.wakeLockEnabled !== undefined) elements.wakeLockEnabled.checked = config.wakeLockEnabled;
                 if (config.dynamicPlacement !== undefined) elements.dynamicPlacement.checked = config.dynamicPlacement;
+                if (config.fullscreenEnabled !== undefined) elements.fullscreenEnabled.checked = config.fullscreenEnabled;
 
                 // Sichtbarkeit des Einstellungscontainers anpassen
                 elements.weatherSettingsSection.style.display = elements.weatherEnabled.checked ? 'block' : 'none';
@@ -2283,6 +2301,7 @@
         elements.deleteBtn.onclick = deleteCurrentImage;
         elements.reloadBtn.onclick = () => rescanFolders(false);
         elements.dynamicPlacement.onchange = saveSettings;
+        elements.fullscreenEnabled.onchange = saveSettings;
         elements.langSelect.onchange = (e) => {
             applyLanguage(e.target.value);
             saveSettings();
