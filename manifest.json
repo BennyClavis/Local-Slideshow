@@ -1,4 +1,5 @@
 {
+  "id": "/Local-Slideshow/",
   "name": "Browser Diashow - Lokale Foto-Diashow",
   "short_name": "Diashow",
   "description": "Eine moderne PWA-Diashow zum Abspielen lokaler Fotos mit Übergangseffekten, Wetteranzeige und RSS-Feeds.",
